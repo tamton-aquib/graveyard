@@ -1,9 +1,9 @@
 # graveyard
-Some of my small rust side projects
+Some of my small side projects in rust.
 
 ---
 #### line_count
-To line counts obv. <br />
+To count lines obv. <br />
 `status: complete`
 
 ---
@@ -15,4 +15,3 @@ To list files and folders with colors. <br />
 #### wifi_menu
 To list active wifi interfaces in a gui. (uses [egui](https://github.com/emilk/egui) lib). <br />
 `status: incomplete`
-
