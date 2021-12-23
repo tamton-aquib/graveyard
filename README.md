@@ -3,15 +3,32 @@ Some of my small side projects in rust.
 
 ---
 #### line_count
-To count lines obv. <br />
+
+![image](https://user-images.githubusercontent.com/77913442/147237875-d9c13afb-3634-4ef9-9c7b-2b17fa70bb61.png)
+
+To count lines in a file obv. <br />
 `status: complete`
 
 ---
+#### colors
+
+![image](https://user-images.githubusercontent.com/77913442/147237949-9efd9328-ac1d-49cd-920d-e5c7cd88abc7.png)
+
+Gets the color of pixel where mouse points to. (uses fltk-rs)<br />
+`status: incomplete` (needs copy to clipboard feature)
+
+---
 #### list
+
+![image](https://user-images.githubusercontent.com/77913442/147237989-7fff900a-71ab-4ab1-8cba-64b7a203efba.png)
+
 To list files and folders with colors. <br />
 `status: complete` (but can be extended)
 
 ---
 #### wifi_menu
+
+![image](https://user-images.githubusercontent.com/77913442/147238021-d9aea35b-34f8-44be-8988-2c6f823bda86.png)
+
 To list active wifi interfaces in a gui. (uses [egui](https://github.com/emilk/egui) lib). <br />
 `status: incomplete`
