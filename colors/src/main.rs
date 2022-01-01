@@ -3,6 +3,7 @@ use image;
 use mouse_rs::Mouse;
 mod utils;
 
+#[derive(Debug)]
 struct Colors {
     hex: String,
     rgb: String,
@@ -45,7 +46,6 @@ fn main() {
     let mut but_rgb = Button::default().with_size(0, 20).with_label(&c.rgb);
 
     but_hex.set_callback(move |_| {
-        //TODO:  try prnting struct values after the app quits
         utils::copy_to_clip(&c.hex);
         // app.quit();
     });
@@ -67,7 +67,7 @@ fn get_pixels(x: u32, y: u32) -> Result<Vec<u8>, image::error::ImageError> {
     let ss = utils::screenshot();
 
     let img = image::open(&ss)?.to_rgb8();
-    utils::delete_ss(ss);
+    utils::delete_screenshot(ss);
 
     let pixel = img.get_pixel(x, y).0.to_vec();
     Ok(pixel)

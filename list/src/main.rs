@@ -1,5 +1,5 @@
-use std::{io, fs, env};
 use std::path::Path;
+use std::{env, fs, io};
 mod icon;
 
 fn real_main() -> io::Result<()> {
