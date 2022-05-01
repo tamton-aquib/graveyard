@@ -47,11 +47,11 @@ fn main() {
 
     but_hex.set_callback(move |_| {
         utils::copy_to_clip(&c.hex);
-        // app.quit();
+        app.quit();
     });
     but_rgb.set_callback(move |_| {
         utils::copy_to_clip(&c.rgb);
-        // app.quit();
+        app.quit();
     });
 
     let mut quit = Button::default().with_size(0, 20).with_label("Cancel");
