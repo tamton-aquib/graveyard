@@ -1,0 +1,10 @@
+[package]
+name = "ctf_utils"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+reqwest = { version = "0.11.0", features = ["json"] }
+tokio = { version = "1.0.2", features = ["full"] }
+anyhow = "1.0.56"
+hex = "0.4.3"
