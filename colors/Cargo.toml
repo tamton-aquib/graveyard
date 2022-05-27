@@ -7,7 +7,6 @@ edition = "2021"
 
 [dependencies]
 mouse-rs = { git = "https://github.com/AltF02/mouse-rs" }
-# chrono = "0.4.19"
-image = "0.23.14"
+x11-screenshot = "0.2.1"
 fltk = "1.2.22"
 clipboard-ext = "0.2.0"

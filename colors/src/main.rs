@@ -1,5 +1,4 @@
 use fltk::{app, button::Button, frame::Frame, group::Pack, prelude::*, window::Window};
-use image;
 use mouse_rs::Mouse;
 mod utils;
 
@@ -8,6 +7,7 @@ struct Colors {
     hex: String,
     rgb: String,
 }
+
 impl Colors {
     fn new(hex: String, rgb: String) -> Colors {
         Colors { hex, rgb }
@@ -21,6 +21,14 @@ fn get_color() -> Colors {
     Colors::new(utils::to_hex(&pixels), utils::to_rgb(&pixels))
 }
 
+fn get_pixels(x: u32, y: u32) -> Result<Vec<u8>, Box<dyn std::error::Error>> {
+    let screen = x11_screenshot::Screen::open().expect("Couldn't open!");
+    let ss = screen.capture().expect("Failed to take screenshot!");
+
+    let pixel = ss.get_pixel(x, y).0.to_vec();
+    Ok(pixel)
+}
+
 fn main() {
     let app = app::App::default();
     let mut win = Window::default()
@@ -28,6 +36,7 @@ fn main() {
         .with_label("ColorCopy");
     let mut pack = Pack::default().with_size(120, 190).center_of(&win);
 
+    // TODO: bad code structuring
     let c: Colors = get_color();
     pack.set_spacing(10);
 
@@ -35,12 +44,11 @@ fn main() {
         .with_size(0, 40)
         .with_label("Clip to copy!");
 
-    let mut noice_frame = Frame::default().with_size(0, 30).with_label("██████");
+    let mut frame = Frame::default().with_size(0, 30).with_label("██████");
     let test_color = fltk::enums::Color::from_hex_str(&c.hex).unwrap();
-    noice_frame.set_color(test_color);
-    noice_frame.set_selection_color(test_color);
-    noice_frame.set_label_color(test_color);
-    // Frame::default().with_size(0, 40).set_label("Noice");
+    frame.set_color(test_color);
+    frame.set_selection_color(test_color);
+    frame.set_label_color(test_color);
 
     let mut but_hex = Button::default().with_size(0, 20).with_label(&c.hex);
     let mut but_rgb = Button::default().with_size(0, 20).with_label(&c.rgb);
@@ -61,14 +69,4 @@ fn main() {
     win.end();
     win.show();
     app.run().unwrap();
-}
-
-fn get_pixels(x: u32, y: u32) -> Result<Vec<u8>, image::error::ImageError> {
-    let ss = utils::screenshot();
-
-    let img = image::open(&ss)?.to_rgb8();
-    utils::delete_screenshot(ss);
-
-    let pixel = img.get_pixel(x, y).0.to_vec();
-    Ok(pixel)
 }
