@@ -1,5 +1,11 @@
 use anyhow::Result;
-use ctf_utils::morse;
+use ctf_utils::caesar;
+
+// COMPLETED:
+// 1. caesar.rs: rot13, caesar, vigenere
+// 2. hasher.rs
+// 3. morse.rs: morse_encode, morse_decode
+// 4. xor.rs: str, hex, byte, etc
 
 // TODO: add colors
 // TODO: complete xor.rs
@@ -9,6 +15,6 @@ use ctf_utils::morse;
 
 #[tokio::main]
 async fn main() -> Result<()> {
-    println!("{}", morse::morse_encode("a"));
+    println!("{}", caesar::rot13("nice"));
     Ok(())
 }

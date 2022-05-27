@@ -20,7 +20,7 @@ pub fn str_x_str(a: &str, b: &str) -> String {
 /// Tries on bytes 0-255
 /// * `s`: &str (query string)
 pub fn str_x_byte(s: &str) -> String {
-    let bruh = (0..=255)
+    (0..=255)
         .map(|i| {
             let ans = hex::decode(s)
                 .unwrap()
@@ -29,9 +29,8 @@ pub fn str_x_byte(s: &str) -> String {
                 .collect::<String>();
             ans
         })
-        .collect::<String>();
+        .collect::<String>()
     // println!("{bruh:?}");
-    bruh
 }
 
 // TODO: to be completed!
