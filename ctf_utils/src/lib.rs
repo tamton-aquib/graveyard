@@ -12,11 +12,16 @@ mod tests {
 
     use anyhow::Result;
     #[tokio::test]
-    async fn check_password() -> Result<()> {
+    async fn check_hasher() -> Result<()> {
         assert_eq!(
             hasher::start_cracker("5f4dcc3b5aa765d61d8327deb882cf99").await?,
             "password"
         );
         Ok(())
+    }
+
+    #[test]
+    fn check_caesar() {
+        assert_eq!(caesar::rot13("nice"), "avpr")
     }
 }
