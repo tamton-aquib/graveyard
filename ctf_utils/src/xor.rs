@@ -1,4 +1,3 @@
-use hex;
 // TODO: maybe add a scoring system to efficiently get correct ones.
 
 /// XOR between a string and another string.
