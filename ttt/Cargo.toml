@@ -1,0 +1,8 @@
+[package]
+name = "ttt"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+tui = "0.18.0"
+crossterm = "0.23.2"

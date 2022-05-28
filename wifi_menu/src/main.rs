@@ -1,4 +1,3 @@
-// INCOMPLETE
 use eframe::{
     egui::{self, CentralPanel, Vec2},
     epi::App,
@@ -6,9 +5,16 @@ use eframe::{
 };
 use std::process::Command;
 
-const TEMP_PASS: &str = "";
-
-struct Menu;
+struct Menu {
+    pass: String,
+}
+impl Menu {
+    fn new() -> Menu {
+        Menu {
+            pass: String::new(),
+        }
+    }
+}
 impl App for Menu {
     fn setup(
         &mut self,
@@ -17,7 +23,6 @@ impl App for Menu {
         _storage: Option<&dyn eframe::epi::Storage>,
     ) {
         println!("Setup ready!");
-        println!("This program wont work! Its just a prototype!");
     }
 
     fn update(&mut self, ctx: &egui::CtxRef, frame: &mut eframe::epi::Frame<'_>) {
@@ -28,21 +33,25 @@ impl App for Menu {
                 egui::Layout::top_down_justified(egui::Align::Center),
                 |ui| {
                     ui.heading("Connect to WIFI!");
-                    ui.add_space(10 as f32);
+                    ui.add_space(10_f32);
 
                     ui.group(|ui| {
                         for wifi in &wifis {
                             if ui.button(&wifi.name).clicked() {
-                                let status = wifi.connect();
+                                let status = wifi.connect(&self.pass);
 
                                 if status {
                                     println!("Connected to wifi: {}", wifi.name);
+                                    self.pass = String::from("");
                                 } else {
                                     println!("Something went wrong!");
                                 }
                             }
                         }
                     });
+                    ui.add_space(30_f32);
+
+                    ui.text_edit_singleline(&mut self.pass).request_focus();
                 },
             );
 
@@ -64,10 +73,10 @@ struct Wifi {
 }
 impl Wifi {
     // TODO: another thread?
-    fn connect(&self) -> bool {
+    fn connect(&self, pass: &str) -> bool {
         println!("About to connect to: {}", self.name);
         Command::new("nmcli")
-            .args(&["d", "wifi", "connect", &self.name, "password", TEMP_PASS])
+            .args(&["d", "wifi", "connect", &self.name, "password", pass])
             .status()
             .is_ok()
     }
@@ -81,7 +90,7 @@ fn get_interfaces() -> Vec<Wifi> {
         .stdout;
 
     let lines = String::from_utf8(output).unwrap();
-    let vec_lines: Vec<&str> = lines.split("\n").collect();
+    let vec_lines: Vec<&str> = lines.lines().collect();
     let valid_lines = &vec_lines[1..&vec_lines.len() - 1];
     let mut wifi_list = vec![];
 
@@ -104,9 +113,8 @@ fn get_interfaces() -> Vec<Wifi> {
 }
 
 fn main() {
-    let app = Menu;
     let mut opts = NativeOptions::default();
-    opts.initial_window_size = Some(Vec2::new(250 as f32, 350 as f32));
+    opts.initial_window_size = Some(Vec2::new(250_f32, 350_f32));
 
-    run_native(Box::new(app), opts);
+    run_native(Box::new(Menu::new()), opts);
 }
