@@ -21,11 +21,11 @@ fn get_color() -> Colors {
     Colors::new(utils::to_hex(&pixels), utils::to_rgb(&pixels))
 }
 
-fn get_pixels(x: u32, y: u32) -> Result<Vec<u8>, Box<dyn std::error::Error>> {
+fn get_pixels(x: u32, y: u32) -> Result<[u8; 3], Box<dyn std::error::Error>> {
     let screen = x11_screenshot::Screen::open().expect("Couldn't open!");
     let ss = screen.capture().expect("Failed to take screenshot!");
 
-    let pixel = ss.get_pixel(x, y).0.to_vec();
+    let pixel = ss.get_pixel(x, y).0;
     Ok(pixel)
 }
 

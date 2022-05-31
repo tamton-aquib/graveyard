@@ -30,7 +30,7 @@ impl Cracker {
 /// Returns a `Result`
 /// * `query`: &str (query string)
 pub async fn start_cracker(query: &str) -> Result<String> {
-    let res = Cracker::new(&query).get().await?;
+    let res = Cracker::new(query).get().await?;
 
     let nice = if res.result.find(':') != None {
         res.result.split(':').last().unwrap().to_string()
