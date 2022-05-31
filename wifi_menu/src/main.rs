@@ -16,16 +16,16 @@ impl Menu {
     }
 }
 impl App for Menu {
-    fn setup(
-        &mut self,
-        _ctx: &egui::CtxRef,
-        _frame: &mut eframe::epi::Frame<'_>,
-        _storage: Option<&dyn eframe::epi::Storage>,
-    ) {
+    fn update(&mut self, _ctx: &egui::CtxRef, _frame: &mut eframe::epi::Frame<'_>) {
         println!("Setup ready!");
     }
 
-    fn update(&mut self, ctx: &egui::CtxRef, frame: &mut eframe::epi::Frame<'_>) {
+    fn setup(
+        &mut self,
+        ctx: &egui::CtxRef,
+        frame: &mut eframe::epi::Frame<'_>,
+        _storage: Option<&dyn eframe::epi::Storage>,
+    ) {
         let wifis = get_interfaces();
 
         CentralPanel::default().show(ctx, |ui| {
@@ -64,7 +64,7 @@ impl App for Menu {
     }
 
     fn name(&self) -> &str {
-        "Wifi_Menu"
+        "wifi_menu"
     }
 }
 
