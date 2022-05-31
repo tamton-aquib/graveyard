@@ -8,17 +8,12 @@ fn main() {
     }
 
     let filename = &args[1];
-    let mut count: u32 = 0;
 
     let content = fs::read_to_string(filename).expect("Couldnt Open file");
-    let lines = content.split("\n");
-    // let lines = content.split("\n"); //.map(|s| count=count+1);
+    let empty_count = content.lines().filter(|l| l.is_empty()).count();
 
-    for line in lines.into_iter() {
-        if line != "" {
-            count = count + 1;
-        }
-    }
+    let total_lines = content.lines().count();
+    let without_empty = total_lines - empty_count;
 
-    println!("{}", count);
+    println!("Total: {}\nNon-Empty: {}", total_lines, without_empty);
 }

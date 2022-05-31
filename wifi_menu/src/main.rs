@@ -1,7 +1,7 @@
 use eframe::{
     egui::{self, CentralPanel, Vec2},
     epi::App,
-    run_native, NativeOptions,
+    run_native,
 };
 use std::process::Command;
 
@@ -113,8 +113,10 @@ fn get_interfaces() -> Vec<Wifi> {
 }
 
 fn main() {
-    let mut opts = NativeOptions::default();
-    opts.initial_window_size = Some(Vec2::new(250_f32, 350_f32));
+    let opts = eframe::NativeOptions {
+        initial_window_size: Some(Vec2::new(250_f32, 350_f32)),
+        ..Default::default()
+    };
 
     run_native(Box::new(Menu::new()), opts);
 }
