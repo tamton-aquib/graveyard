@@ -6,7 +6,7 @@ Will be changed to a fully functioning binary later.
 - [ ] substitution
 - [x] hasher using dehash api
 - [ ] Caesar
-    - [ ] simple caesar
+    - [x] simple caesar
     - [x] rot
     - [ ] vigenere
 - [ ] XOR
@@ -14,13 +14,16 @@ Will be changed to a fully functioning binary later.
     - [ ] hex to hex
     - [ ] string to string
 - [ ] BASE
-    - [ ] 2: binary
-    - [ ] 8: octal
-    - [ ] 16: hex
-    - [ ] base32
-    - [ ] base64
+    - [x] 2: binary
+    - [x] 8: octal
+    - [x] 16: hex
+    - [x] base32
+    - [x] base64
 - [ ] Advanced stuff (maybe wont do this)
     - [ ] ECB and CBC
     - [ ] RSA
 
 - [ ] scoring methods for efficiency.
+- [ ] write tests for each mod.
+- [ ] Reduce the number of unwraps.
+- [ ] Automatic result finding.
