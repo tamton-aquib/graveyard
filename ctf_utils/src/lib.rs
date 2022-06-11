@@ -1,3 +1,4 @@
+pub mod base;
 pub mod caesar;
 pub mod general;
 pub mod hasher;
