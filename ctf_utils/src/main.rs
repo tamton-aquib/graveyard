@@ -1,15 +1,14 @@
 use anyhow::Result;
 // use ctf_utils::caesar;
-use ctf_utils::base;
+use ctf_utils::caesar;
 // TODO: add colors
 // TODO: complete xor.rs
 // TODO: start general.rs
 // TODO: complete caesar::vigenere()
-// TODO: start on bases: 2(binary),8(octal),16(hex),32,64
 
 #[tokio::main]
 async fn main() -> Result<()> {
-    println!("{}", base::b32("bruh"));
+    println!("{}", caesar::vigenere("bruh", "nice"));
     Ok(())
 }
 
