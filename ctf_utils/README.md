@@ -4,21 +4,21 @@ Will be changed to a fully functioning binary later.
 
 ### Todo:
 - [ ] substitution
-- [x] hasher using dehash api
+- [x] ~hasher using dehash api~
 - [ ] Caesar
-    - [x] simple caesar
-    - [x] rot
+    - [x] ~simple caesar~
+    - [x] ~rot~
     - [ ] vigenere
 - [ ] XOR
     - [ ] single byte
     - [ ] hex to hex
     - [ ] string to string
 - [ ] BASE
-    - [x] 2: binary
-    - [x] 8: octal
-    - [x] 16: hex
-    - [x] base32
-    - [x] base64
+    - [x] ~2: binary~
+    - [x] ~8: octal~
+    - [x] ~16: hex~
+    - [x] ~base32~
+    - [x] ~base64~
 - [ ] Advanced stuff (maybe wont do this)
     - [ ] ECB and CBC
     - [ ] RSA
