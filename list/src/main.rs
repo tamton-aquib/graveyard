@@ -21,7 +21,7 @@ fn real_main() -> io::Result<()> {
 
         nice_list.push(item);
     }
-    println!("{}", nice_list.join("   "));
+    println!(" {} ", nice_list.join("   "));
 
     Ok(())
 }
