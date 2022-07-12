@@ -1,8 +1,8 @@
 use colored::Colorize;
 use std::path::Path;
 
-pub fn get_fileicon(filename: &Path, is_dir: bool) -> String {
-    if is_dir {
+pub fn get_fileicon(filename: &Path) -> String {
+    if filename.is_dir() {
         return "".truecolor(86, 156, 214).to_string();
     }
 

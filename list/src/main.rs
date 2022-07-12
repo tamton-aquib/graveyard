@@ -14,9 +14,8 @@ fn real_main() -> io::Result<()> {
     for entry in &entries {
         let filename = Path::new(entry);
         let str_filename = &filename.file_name().unwrap().to_str().unwrap().to_string();
-        let is_dir = filename.is_dir();
 
-        let icon = icon::get_fileicon(filename, is_dir);
+        let icon = icon::get_fileicon(filename);
         let item = format!("{} {}", icon, str_filename);
 
         nice_list.push(item);
