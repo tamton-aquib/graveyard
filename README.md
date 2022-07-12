@@ -19,7 +19,7 @@ TUI Typing Test
 
 #### list
 
-![image](https://user-images.githubusercontent.com/77913442/147237989-7fff900a-71ab-4ab1-8cba-64b7a203efba.png)
+![image](https://user-images.githubusercontent.com/77913442/178466556-633ca4b4-d28d-4878-980b-bd69dde49b3c.png)
 
 To list files and folders with colors.
 > `status: complete` (but can be extended)
