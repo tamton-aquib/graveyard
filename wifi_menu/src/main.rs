@@ -8,6 +8,7 @@ use std::process::Command;
 struct Menu {
     pass: String,
 }
+
 impl Menu {
     fn new() -> Menu {
         Menu {
