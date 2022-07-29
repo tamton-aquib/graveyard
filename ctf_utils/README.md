@@ -4,7 +4,7 @@ Will be changed to a fully functioning binary later.
 
 ### Todo:
 - [ ] substitution
-- [x] ~hasher using dehash api~
+- [x] ~hasher using dehash api~ -> temp not working.
 - [ ] Caesar
     - [x] ~simple caesar~
     - [x] ~rot~

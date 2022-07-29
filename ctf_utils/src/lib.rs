@@ -1,9 +1,9 @@
 pub mod base;
 pub mod caesar;
 pub mod general;
-pub mod hasher;
 pub mod morse;
 pub mod xor;
+// pub mod hasher;
 
 // TODO: add test cases for each module.
 
@@ -11,18 +11,20 @@ pub mod xor;
 mod tests {
     use super::*;
 
-    use anyhow::Result;
-    #[tokio::test]
-    async fn check_hasher() -> Result<()> {
-        assert_eq!(
-            hasher::start_cracker("5f4dcc3b5aa765d61d8327deb882cf99").await?,
-            "password"
-        );
-        Ok(())
+    #[test]
+    fn check_rot() {
+        assert_eq!(caesar::rot13("nice"), "avpr")
     }
-
     #[test]
     fn check_caesar() {
-        assert_eq!(caesar::rot13("nice"), "avpr")
+        assert_eq!(caesar::caesar("nice")[25], "[25] mhbd")
+    }
+    #[test]
+    fn check_morse_encode() {
+        assert_eq!(morse::morse_encode("nice"), "_. .. _._. . ")
+    }
+    #[test]
+    fn check_morse_decode() {
+        assert_eq!(morse::morse_decode("_. .. _._. . "), "nice")
     }
 }

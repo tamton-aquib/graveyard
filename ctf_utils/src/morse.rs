@@ -1,4 +1,5 @@
-pub fn morse() {}
+// TODO: automatic detection
+pub fn morse(_query: &str) {}
 
 /// Morse encoding.
 /// Returns encoded `String`.
