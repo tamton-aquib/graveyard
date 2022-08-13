@@ -5,30 +5,73 @@ use eframe::{
 };
 use std::process::Command;
 
+mod wifi;
+use wifi::Wifi;
+
 struct Menu {
     pass: String,
+    list: Vec<Wifi>,
 }
 
 impl Menu {
     fn new() -> Menu {
         Menu {
             pass: String::new(),
+            list: Vec::new(),
         }
     }
-}
-impl App for Menu {
-    fn update(&mut self, _ctx: &egui::CtxRef, _frame: &mut eframe::epi::Frame<'_>) {
-        println!("Setup ready!");
+
+    fn get_interfaces(&self) -> Vec<Wifi> {
+        let output = Command::new("nmcli")
+            .args(&["d", "wifi", "list"])
+            .output()
+            .unwrap()
+            .stdout;
+
+        let lines = String::from_utf8(output).unwrap();
+        let vec_lines: Vec<&str> = lines.lines().collect();
+        let valid_lines = &vec_lines[1..&vec_lines.len() - 1];
+        let mut wifi_list = vec![];
+
+        for i in valid_lines {
+            let mut current_wifi: Wifi = Wifi {
+                name: String::new(),
+            };
+            let parts: Vec<&str> = i.split_whitespace().collect();
+            let length = parts.len();
+
+            match length {
+                10 => current_wifi.name = parts[2].to_string(),
+                9 => current_wifi.name = parts[1].to_string(),
+                _ => panic!("Couldnt get wifi name: {:?}", parts),
+            }
+
+            wifi_list.push(current_wifi);
+        }
+        wifi_list
     }
 
+    fn refresh_list(&mut self) {
+        self.list = self.get_interfaces();
+    }
+}
+
+impl App for Menu {
     fn setup(
         &mut self,
-        ctx: &egui::CtxRef,
-        frame: &mut eframe::epi::Frame<'_>,
+        _ctx: &egui::CtxRef,
+        _frame: &mut eframe::epi::Frame<'_>,
         _storage: Option<&dyn eframe::epi::Storage>,
     ) {
-        let wifis = get_interfaces();
+        println!("Setup ready!");
+        self.list = self.get_interfaces();
+    }
 
+    fn clear_color(&self) -> egui::Rgba {
+        egui::Rgba::from_rgb(255f32, 255f32, 255f32)
+    }
+
+    fn update(&mut self, ctx: &egui::CtxRef, frame: &mut eframe::epi::Frame<'_>) {
         CentralPanel::default().show(ctx, |ui| {
             ui.with_layout(
                 egui::Layout::top_down_justified(egui::Align::Center),
@@ -37,7 +80,7 @@ impl App for Menu {
                     ui.add_space(10_f32);
 
                     ui.group(|ui| {
-                        for wifi in &wifis {
+                        for wifi in &self.list {
                             if ui.button(&wifi.name).clicked() {
                                 let status = wifi.connect(&self.pass);
 
@@ -56,11 +99,19 @@ impl App for Menu {
                 },
             );
 
-            ui.with_layout(egui::Layout::bottom_up(egui::Align::Center), |ui| {
-                if ui.button("Quit").clicked() {
-                    frame.quit();
-                }
+            // ui.horizontal(|ui| {
+            ui.with_layout(egui::Layout::top_down(egui::Align::Center), |ui| {
+                ui.horizontal(|ui| {
+                    if ui.button("Quit").clicked() {
+                        frame.quit();
+                    }
+
+                    if ui.button("refresh").clicked() {
+                        self.refresh_list();
+                    }
+                })
             })
+            // })
         });
     }
 
@@ -69,53 +120,10 @@ impl App for Menu {
     }
 }
 
-struct Wifi {
-    name: String,
-}
-impl Wifi {
-    // TODO: another thread?
-    fn connect(&self, pass: &str) -> bool {
-        println!("About to connect to: {}", self.name);
-        Command::new("nmcli")
-            .args(&["d", "wifi", "connect", &self.name, "password", pass])
-            .status()
-            .is_ok()
-    }
-}
-
-fn get_interfaces() -> Vec<Wifi> {
-    let output = Command::new("nmcli")
-        .args(&["d", "wifi", "list"])
-        .output()
-        .unwrap()
-        .stdout;
-
-    let lines = String::from_utf8(output).unwrap();
-    let vec_lines: Vec<&str> = lines.lines().collect();
-    let valid_lines = &vec_lines[1..&vec_lines.len() - 1];
-    let mut wifi_list = vec![];
-
-    for i in valid_lines {
-        let mut current_wifi: Wifi = Wifi {
-            name: String::new(),
-        };
-        let parts: Vec<&str> = i.split_whitespace().collect();
-        let length = parts.len();
-
-        match length {
-            10 => current_wifi.name = parts[2].to_string(),
-            9 => current_wifi.name = parts[1].to_string(),
-            _ => panic!("Couldnt get wifi name: {:?}", parts),
-        }
-
-        wifi_list.push(current_wifi);
-    }
-    wifi_list
-}
-
 fn main() {
     let opts = eframe::NativeOptions {
         initial_window_size: Some(Vec2::new(250_f32, 350_f32)),
+        transparent: true,
         ..Default::default()
     };
 

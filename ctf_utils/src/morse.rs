@@ -1,5 +1,11 @@
 // TODO: automatic detection
-pub fn morse(_query: &str) {}
+pub fn morse(query: &str) -> String {
+    if query.chars().all(|x| "._- ".contains(x)) {
+        morse_decode(query)
+    } else {
+        morse_encode(query)
+    }
+}
 
 /// Morse encoding.
 /// Returns encoded `String`.
@@ -131,7 +137,7 @@ pub fn morse_decode(s: &str) -> String {
             "..._.._" => '$',
             ".__._." => '@',
             "/" => ' ',
-            _ => '|',
+            _ => '?',
         })
         .collect::<String>()
 }

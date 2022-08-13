@@ -20,14 +20,15 @@ pub fn str_x_str(a: &str, b: &str) -> String {
 /// * `s`: &str (query string)
 pub fn str_x_byte(s: &str) -> String {
     (0..=255)
-        .map(|i| {
+        .filter(|i| {
             let ans = hex::decode(s)
                 .unwrap()
                 .iter()
                 .map(|b| (b ^ i) as char)
                 .collect::<String>();
-            ans
+            ans.is_ascii()
         })
+        .map(|n| n as char)
         .collect::<String>()
     // println!("{bruh:?}");
 }

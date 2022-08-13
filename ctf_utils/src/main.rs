@@ -2,6 +2,7 @@ use clap::Parser;
 
 use ctf_utils::caesar;
 use ctf_utils::morse;
+use ctf_utils::xor;
 // TODO: add colors
 // TODO: complete xor.rs
 // TODO: start general.rs
@@ -11,28 +12,29 @@ use ctf_utils::morse;
 enum Cli {
     /// Caesar decryption
     Caesar { query: String },
-    /// Vigenere decryption
-    Vigenere { query: String, key: String },
     /// Rot13 decryption
     Rot13 { query: String },
 
     /// Morse decryption
     Morse { query: String },
+
+    /// Different kinds of xor.
+    Xor { a: String },
 }
 
 fn main() {
     match Cli::parse() {
         Cli::Caesar { query } => {
-            println!("Trying caesar:\n {}", caesar::caesar(&query).join("\n"));
-        }
-        Cli::Vigenere { query, key } => {
-            println!("Trying vigenere: {}", caesar::vigenere(&query, &key));
+            println!("Trying caesar:\n{}", caesar::caesar(&query).join("\n"));
         }
         Cli::Rot13 { query } => {
             println!("Trying rot13: {}", caesar::rot13(&query));
         }
         Cli::Morse { query } => {
-            println!("Trying morse: {}", morse::morse_decode(&query));
+            println!("Trying morse: {}", morse::morse(&query));
+        }
+        Cli::Xor { a } => {
+            println!("Trying morse: {}", xor::str_x_byte(&a));
         }
     }
 }

@@ -2,6 +2,9 @@
 These are some utilities when playing ctfs. <br/>
 Will be changed to a fully functioning binary later.
 
+### NOTES:
+- morse uses `_` as dash instead of `-` as of now.
+
 ### Todo:
 - [ ] substitution
 - [x] ~hasher using dehash api~ -> temp not working.
