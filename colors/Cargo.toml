@@ -4,7 +4,7 @@ version = "0.1.0"
 edition = "2021"
 
 [dependencies]
+eframe = { version="0.18.0" }
 mouse-rs = { git = "https://github.com/AltF02/mouse-rs" }
 x11-screenshot = "0.2.1"
-fltk = "1.2.22"
 clipboard-ext = "0.2.0"

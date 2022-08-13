@@ -1,24 +1,16 @@
-use fltk::{app, button::Button, frame::Frame, group::Pack, prelude::*, window::Window};
-use mouse_rs::Mouse;
 mod utils;
 
-#[derive(Debug)]
-struct Colors {
+use eframe::{
+    egui::{self, Layout, RichText},
+    emath::{vec2, Align},
+    epaint::Color32,
+};
+use mouse_rs::Mouse;
+
+struct MyApp {
+    rgb: [u8; 3],
     hex: String,
-    rgb: String,
-}
-
-impl Colors {
-    fn new(hex: String, rgb: String) -> Colors {
-        Colors { hex, rgb }
-    }
-}
-
-fn get_color() -> Colors {
-    let pos = Mouse::new().get_position().unwrap();
-    let pixels = get_pixels(pos.x as u32, pos.y as u32).unwrap();
-
-    Colors::new(utils::to_hex(&pixels), utils::to_rgb(&pixels))
+    rgb_str: String,
 }
 
 fn get_pixels(x: u32, y: u32) -> Result<[u8; 3], Box<dyn std::error::Error>> {
@@ -29,44 +21,49 @@ fn get_pixels(x: u32, y: u32) -> Result<[u8; 3], Box<dyn std::error::Error>> {
     Ok(pixel)
 }
 
+impl Default for MyApp {
+    fn default() -> Self {
+        let pos = Mouse::new().get_position().unwrap();
+        let pixels = get_pixels(pos.x as u32, pos.y as u32).unwrap();
+        Self {
+            rgb_str: utils::to_rgb(&pixels),
+            rgb: pixels,
+            hex: utils::to_hex(&pixels),
+        }
+    }
+}
+
+impl eframe::App for MyApp {
+    fn update(&mut self, ctx: &egui::Context, frame: &mut eframe::Frame) {
+        let [r, g, b] = self.rgb;
+        egui::CentralPanel::default().show(ctx, |ui| {
+            ui.with_layout(Layout::top_down_justified(Align::Center), |ui| {
+                ui.label(RichText::new("Click to copy!"));
+                ui.add_space(15_f32);
+                ui.label(
+                    RichText::new(" ".repeat(15)).background_color(Color32::from_rgb(r, g, b)),
+                );
+                ui.add_space(15_f32);
+                ui.group(|ui| {
+                    if ui.button(&self.hex).clicked() {
+                        utils::copy_to_clip(&self.hex);
+                        frame.quit();
+                    }
+                    ui.add_space(10_f32);
+                    if ui.button(&self.rgb_str).clicked() {
+                        utils::copy_to_clip(&self.rgb_str);
+                        frame.quit();
+                    }
+                })
+            })
+        });
+    }
+}
+
 fn main() {
-    let app = app::App::default();
-    let mut win = Window::default()
-        .with_size(150, 200)
-        .with_label("ColorCopy");
-    let mut pack = Pack::default().with_size(120, 190).center_of(&win);
-
-    // TODO: bad code structuring
-    let c: Colors = get_color();
-    pack.set_spacing(10);
-
-    Frame::default()
-        .with_size(0, 40)
-        .with_label("Clip to copy!");
-
-    let mut frame = Frame::default().with_size(0, 30).with_label("██████");
-    let test_color = fltk::enums::Color::from_hex_str(&c.hex).unwrap();
-    frame.set_color(test_color);
-    frame.set_selection_color(test_color);
-    frame.set_label_color(test_color);
-
-    let mut but_hex = Button::default().with_size(0, 20).with_label(&c.hex);
-    let mut but_rgb = Button::default().with_size(0, 20).with_label(&c.rgb);
-
-    but_hex.set_callback(move |_| {
-        utils::copy_to_clip(&c.hex);
-        app.quit();
-    });
-    but_rgb.set_callback(move |_| {
-        utils::copy_to_clip(&c.rgb);
-        app.quit();
-    });
-
-    let mut quit = Button::default().with_size(0, 20).with_label("Cancel");
-    quit.set_callback(move |_| app.quit());
-    pack.end();
-
-    win.end();
-    win.show();
-    app.run().unwrap();
+    let opts = eframe::NativeOptions {
+        initial_window_size: Some(vec2(120_f32, 150_f32)),
+        ..Default::default()
+    };
+    eframe::run_native("colors", opts, Box::new(|_cc| Box::new(MyApp::default())));
 }

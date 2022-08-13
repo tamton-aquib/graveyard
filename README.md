@@ -6,7 +6,7 @@ Some of my small side projects in rust.
 
 ![image](https://user-images.githubusercontent.com/77913442/147237949-9efd9328-ac1d-49cd-920d-e5c7cd88abc7.png)
 
-Gets the color of pixel where mouse points to. (uses fltk-rs)
+Gets the color of pixel where mouse points to. (uses egui)
 > `status: complete` (only works on x11)
 
 ---
