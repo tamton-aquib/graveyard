@@ -23,7 +23,7 @@ fn render_text(app: &mut App) -> Vec<Span> {
     }
     vec![
         Span::styled(&app.before, Style::default().fg(Color::White)),
-        Span::styled(&app.content, Style::default().fg(Color::LightRed)),
+        Span::styled(&app.content, Style::default().fg(Color::LightGreen)),
         Span::styled(&app.after, Style::default().fg(Color::White)),
     ]
     // vec![&app.before, &app.content, &app.after]
@@ -36,13 +36,21 @@ pub fn ui<B: Backend>(f: &mut Frame<B>, app: &mut App) {
     f.render_widget(block, size);
 
     let chunks = Layout::default()
-        .direction(Direction::Horizontal)
-        .constraints([Constraint::Percentage(50), Constraint::Percentage(50)].as_ref())
+        .direction(Direction::Vertical)
+        .constraints(
+            [
+                Constraint::Percentage(20),
+                Constraint::Percentage(10),
+                Constraint::Percentage(20),
+                Constraint::Percentage(50),
+            ]
+            .as_ref(),
+        )
         .split(size);
 
     let text = vec![Spans::from(Span::styled(
         format!("Query: {}", &app.re_str),
-        Style::default().fg(Color::White),
+        Style::default().fg(Color::Cyan),
     ))];
 
     let create_block = |title| {
@@ -57,10 +65,10 @@ pub fn ui<B: Backend>(f: &mut Frame<B>, app: &mut App) {
         .block(Block::default())
         .alignment(Alignment::Center)
         .wrap(Wrap { trim: true });
-    f.render_widget(paragraph, chunks[0]);
+    f.render_widget(paragraph, chunks[1]);
 
     let paragraph = Paragraph::new(Spans::from(render_text(app)))
         .block(create_block("Match String"))
         .alignment(Alignment::Center);
-    f.render_widget(paragraph, chunks[1]);
+    f.render_widget(paragraph, chunks[3]);
 }
