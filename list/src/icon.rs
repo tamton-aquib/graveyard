@@ -28,10 +28,12 @@ pub fn get_fileicon(filename: &Path) -> String {
 
             "norg" => "".truecolor(72, 120, 190).to_string(),
             "lock" => "".white().to_string(),
-            "leex" | "ex" | "exs" => "".truecolor(160, 116, 196).to_string(),
-
+            "leex" | "ex" | "exs" => "".truecolor(160, 116, 196).to_string(), // _ => "".to_string(),
             _ => "".to_string(),
         },
-        None => "".to_string(),
+        None => match filename.file_name().unwrap().to_str().unwrap() {
+            "Makefile" => "".yellow().to_string(),
+            _ => "".to_string(),
+        },
     }
 }
