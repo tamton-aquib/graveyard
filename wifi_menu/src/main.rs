@@ -23,32 +23,20 @@ impl Menu {
 
     fn get_interfaces(&self) -> Vec<Wifi> {
         let output = Command::new("nmcli")
-            .args(&["d", "wifi", "list"])
+            .args(&["-f", "SSID", "d", "wifi"])
             .output()
             .unwrap()
             .stdout;
 
         let lines = String::from_utf8(output).unwrap();
-        let vec_lines: Vec<&str> = lines.lines().collect();
-        let valid_lines = &vec_lines[1..&vec_lines.len() - 1];
-        let mut wifi_list = vec![];
 
-        for i in valid_lines {
-            let mut current_wifi: Wifi = Wifi {
-                name: String::new(),
-            };
-            let parts: Vec<&str> = i.split_whitespace().collect();
-            let length = parts.len();
-
-            match length {
-                10 => current_wifi.name = parts[2].to_string(),
-                9 => current_wifi.name = parts[1].to_string(),
-                _ => panic!("Couldnt get wifi name: {:?}", parts),
-            }
-
-            wifi_list.push(current_wifi);
-        }
-        wifi_list
+        lines
+            .lines()
+            .skip(1)
+            .map(|line| Wifi {
+                name: line.split(":").nth(0).unwrap().trim().to_string(),
+            })
+            .collect()
     }
 
     fn refresh_list(&mut self) {
