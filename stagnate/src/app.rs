@@ -1,7 +1,7 @@
 use crate::excel_handler::ExcelHandler;
+use regex::Regex;
 use std::collections::HashMap;
 use std::time::Instant;
-use regex::Regex;
 
 pub enum AppMode {
     Normal,
@@ -27,7 +27,11 @@ impl Viewport {
         }
     }
 
-    pub fn visible_range(&self, total_rows: usize, total_cols: usize) -> (usize, usize, usize, usize) {
+    pub fn visible_range(
+        &self,
+        total_rows: usize,
+        total_cols: usize,
+    ) -> (usize, usize, usize, usize) {
         let start_y = self.scroll_y;
         let end_y = (start_y + self.rows).min(total_rows);
         let start_x = self.scroll_x;
@@ -40,10 +44,10 @@ pub struct App {
     pub mode: AppMode,
     pub file_path: String,
     pub handler: ExcelHandler,
-    
+
     // Virtual Scroller
     pub viewport: Viewport,
-    
+
     // Cursor position in absolute coordinates
     pub cursor_y: usize,
     pub cursor_x: usize,
@@ -97,7 +101,9 @@ impl App {
         if mx >= 7 {
             let offset_x = (mx - 7) as usize;
             let clicked_col = self.viewport.scroll_x + (offset_x / 16);
-            if clicked_col < self.handler.total_cols() && clicked_col < self.viewport.scroll_x + self.viewport.cols {
+            if clicked_col < self.handler.total_cols()
+                && clicked_col < self.viewport.scroll_x + self.viewport.cols
+            {
                 self.cursor_x = clicked_col;
             }
         } else {
@@ -176,7 +182,7 @@ impl App {
     pub fn execute_search(&mut self) {
         self.mode = AppMode::Normal;
         let query = self.search_input.trim();
-        
+
         if query.is_empty() {
             return;
         }
@@ -192,11 +198,19 @@ impl App {
 
         let c = self.cursor_x;
 
-        let rows_to_search: Box<dyn Iterator<Item = usize>> = if let Some(filtered) = &self.filtered_rows {
-            Box::new(filtered.iter().copied().skip(1).collect::<Vec<usize>>().into_iter()) // Skip header 0
-        } else {
-            Box::new(1..total)
-        };
+        let rows_to_search: Box<dyn Iterator<Item = usize>> =
+            if let Some(filtered) = &self.filtered_rows {
+                Box::new(
+                    filtered
+                        .iter()
+                        .copied()
+                        .skip(1)
+                        .collect::<Vec<usize>>()
+                        .into_iter(),
+                ) // Skip header 0
+            } else {
+                Box::new(1..total)
+            };
 
         for r in rows_to_search {
             let val = self.get_raw_cell_value(r, c);
@@ -269,8 +283,10 @@ impl App {
 
     pub fn prev_sheet(&mut self) {
         let len = self.handler.sheet_names.len();
-        if len == 0 { return; }
-        
+        if len == 0 {
+            return;
+        }
+
         let mut idx = self.handler.current_sheet_idx;
         if idx == 0 {
             idx = len - 1;

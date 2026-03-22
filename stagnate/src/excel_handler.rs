@@ -1,4 +1,4 @@
-use calamine::{Reader, open_workbook_auto, Data, Range};
+use calamine::{Data, Range, Reader, open_workbook_auto};
 use rust_xlsxwriter::Workbook;
 use std::collections::HashMap;
 
@@ -13,7 +13,7 @@ impl ExcelHandler {
     pub fn new(file_path: &str) -> Self {
         let mut sheet_names = Vec::new();
 
-        if let Ok(mut workbook) = open_workbook_auto(file_path) {
+        if let Ok(workbook) = open_workbook_auto(file_path) {
             sheet_names = workbook.sheet_names().to_vec();
         }
 
@@ -28,8 +28,10 @@ impl ExcelHandler {
     }
 
     pub fn load_sheet(&mut self, idx: usize) {
-        if idx >= self.sheet_names.len() { return; }
-        
+        if idx >= self.sheet_names.len() {
+            return;
+        }
+
         self.current_sheet_idx = idx;
         let sheet_name = self.sheet_names[idx].clone();
 
@@ -43,17 +45,26 @@ impl ExcelHandler {
     }
 
     pub fn sheet_name(&self) -> String {
-        self.sheet_names.get(self.current_sheet_idx).cloned().unwrap_or_default()
+        self.sheet_names
+            .get(self.current_sheet_idx)
+            .cloned()
+            .unwrap_or_default()
     }
 
     pub fn total_rows(&self) -> usize {
         let name = self.sheet_name();
-        self.sheet_cache.get(&name).map(|r| r.get_size().0).unwrap_or(0)
+        self.sheet_cache
+            .get(&name)
+            .map(|r| r.get_size().0)
+            .unwrap_or(0)
     }
 
     pub fn total_cols(&self) -> usize {
         let name = self.sheet_name();
-        self.sheet_cache.get(&name).map(|r| r.get_size().1).unwrap_or(0)
+        self.sheet_cache
+            .get(&name)
+            .map(|r| r.get_size().1)
+            .unwrap_or(0)
     }
 
     pub fn get_cell(&self, r: usize, c: usize) -> String {
@@ -76,9 +87,13 @@ impl ExcelHandler {
         String::new()
     }
 
-    pub fn save(&self, file_path: &str, all_edits: &HashMap<String, HashMap<(usize, usize), String>>) {
+    pub fn save(
+        &self,
+        file_path: &str,
+        all_edits: &HashMap<String, HashMap<(usize, usize), String>>,
+    ) {
         let mut workbook_out = Workbook::new();
-        
+
         if let Ok(mut calamine_wb) = open_workbook_auto(file_path) {
             for sheet_name in &self.sheet_names {
                 let safe_sheet_name = if sheet_name.len() > 31 {
@@ -86,7 +101,10 @@ impl ExcelHandler {
                 } else {
                     &sheet_name
                 };
-                let worksheet = workbook_out.add_worksheet().set_name(safe_sheet_name).unwrap();
+                let worksheet = workbook_out
+                    .add_worksheet()
+                    .set_name(safe_sheet_name)
+                    .unwrap();
 
                 let empty_map = HashMap::new();
                 let sheet_edits = all_edits.get(sheet_name).unwrap_or(&empty_map);
@@ -97,18 +115,27 @@ impl ExcelHandler {
                 if let Ok(range) = calamine_wb.worksheet_range(sheet_name) {
                     total_r = range.get_size().0;
                     total_c = range.get_size().1;
-                    
+
                     for (r, row) in range.rows().enumerate() {
                         for (c, cell) in row.iter().enumerate() {
                             if let Some(edited_val) = sheet_edits.get(&(r, c)) {
                                 let _ = worksheet.write_string(r as u32, c as u16, edited_val);
                             } else {
                                 match cell {
-                                    Data::String(s) => { let _ = worksheet.write_string(r as u32, c as u16, s); },
-                                    Data::Float(f) => { let _ = worksheet.write_number(r as u32, c as u16, *f); },
-                                    Data::Int(i) => { let _ = worksheet.write_number(r as u32, c as u16, *i as f64); },
-                                    Data::Bool(b) => { let _ = worksheet.write_boolean(r as u32, c as u16, *b); },
-                                    Data::Empty | _ => {},
+                                    Data::String(s) => {
+                                        let _ = worksheet.write_string(r as u32, c as u16, s);
+                                    }
+                                    Data::Float(f) => {
+                                        let _ = worksheet.write_number(r as u32, c as u16, *f);
+                                    }
+                                    Data::Int(i) => {
+                                        let _ =
+                                            worksheet.write_number(r as u32, c as u16, *i as f64);
+                                    }
+                                    Data::Bool(b) => {
+                                        let _ = worksheet.write_boolean(r as u32, c as u16, *b);
+                                    }
+                                    Data::Empty | _ => {}
                                 }
                             }
                         }

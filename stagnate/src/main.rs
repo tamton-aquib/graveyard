@@ -1,14 +1,14 @@
 mod app;
-mod ui;
 mod excel_handler;
+mod ui;
 
 use app::App;
 use crossterm::{
     event::{DisableMouseCapture, EnableMouseCapture},
     execute,
-    terminal::{disable_raw_mode, enable_raw_mode, EnterAlternateScreen, LeaveAlternateScreen},
+    terminal::{EnterAlternateScreen, LeaveAlternateScreen, disable_raw_mode, enable_raw_mode},
 };
-use ratatui::{backend::CrosstermBackend, Terminal};
+use ratatui::{Terminal, backend::CrosstermBackend};
 use std::{error::Error, io};
 
 fn main() -> Result<(), Box<dyn Error>> {
@@ -63,7 +63,9 @@ fn run_app<B: ratatui::backend::Backend>(
                 crossterm::event::Event::Key(key) => {
                     if app.show_help {
                         match key.code {
-                            crossterm::event::KeyCode::Char('?') | crossterm::event::KeyCode::Esc | crossterm::event::KeyCode::Char('q') => {
+                            crossterm::event::KeyCode::Char('?')
+                            | crossterm::event::KeyCode::Esc
+                            | crossterm::event::KeyCode::Char('q') => {
                                 app.toggle_help();
                             }
                             _ => {}
@@ -73,7 +75,9 @@ fn run_app<B: ratatui::backend::Backend>(
 
                     match app.mode {
                         app::AppMode::Normal => {
-                            let has_control = key.modifiers.contains(crossterm::event::KeyModifiers::CONTROL);
+                            let has_control = key
+                                .modifiers
+                                .contains(crossterm::event::KeyModifiers::CONTROL);
                             if has_control {
                                 match key.code {
                                     crossterm::event::KeyCode::Char('d') => app.page_down(),
@@ -87,13 +91,20 @@ fn run_app<B: ratatui::backend::Backend>(
                                 match key.code {
                                     crossterm::event::KeyCode::Esc => app.clear_search(),
                                     crossterm::event::KeyCode::Char('q') => return Ok(()),
-                                    crossterm::event::KeyCode::Char('h') | crossterm::event::KeyCode::Left => app.move_left(),
-                                    crossterm::event::KeyCode::Char('j') | crossterm::event::KeyCode::Down => app.move_down(),
-                                    crossterm::event::KeyCode::Char('k') | crossterm::event::KeyCode::Up => app.move_up(),
-                                    crossterm::event::KeyCode::Char('l') | crossterm::event::KeyCode::Right => app.move_right(),
-                                    crossterm::event::KeyCode::Tab | crossterm::event::KeyCode::Char(']') => app.next_sheet(),
-                                    crossterm::event::KeyCode::BackTab | crossterm::event::KeyCode::Char('[') => app.prev_sheet(),
-                                    crossterm::event::KeyCode::Char('i') | crossterm::event::KeyCode::Enter => {
+                                    crossterm::event::KeyCode::Char('h')
+                                    | crossterm::event::KeyCode::Left => app.move_left(),
+                                    crossterm::event::KeyCode::Char('j')
+                                    | crossterm::event::KeyCode::Down => app.move_down(),
+                                    crossterm::event::KeyCode::Char('k')
+                                    | crossterm::event::KeyCode::Up => app.move_up(),
+                                    crossterm::event::KeyCode::Char('l')
+                                    | crossterm::event::KeyCode::Right => app.move_right(),
+                                    crossterm::event::KeyCode::Tab
+                                    | crossterm::event::KeyCode::Char(']') => app.next_sheet(),
+                                    crossterm::event::KeyCode::BackTab
+                                    | crossterm::event::KeyCode::Char('[') => app.prev_sheet(),
+                                    crossterm::event::KeyCode::Char('i')
+                                    | crossterm::event::KeyCode::Enter => {
                                         app.enter_edit_mode();
                                     }
                                     crossterm::event::KeyCode::Char(':') => {
@@ -120,72 +131,64 @@ fn run_app<B: ratatui::backend::Backend>(
                                 }
                             }
                         }
-                        app::AppMode::Edit => {
-                            match key.code {
-                                crossterm::event::KeyCode::Esc => app.exit_edit_mode(),
-                                crossterm::event::KeyCode::Enter => {
-                                    app.save_edit();
-                                    app.exit_edit_mode();
-                                }
-                                crossterm::event::KeyCode::Char(c) => {
-                                    app.edit_input.push(c);
-                                }
-                                crossterm::event::KeyCode::Backspace => {
-                                    app.edit_input.pop();
-                                }
-                                _ => {}
+                        app::AppMode::Edit => match key.code {
+                            crossterm::event::KeyCode::Esc => app.exit_edit_mode(),
+                            crossterm::event::KeyCode::Enter => {
+                                app.save_edit();
+                                app.exit_edit_mode();
                             }
-                        }
-                        app::AppMode::Command => {
-                            match key.code {
-                                crossterm::event::KeyCode::Esc => app.mode = app::AppMode::Normal,
-                                crossterm::event::KeyCode::Enter => {
-                                    app.execute_command();
-                                }
-                                crossterm::event::KeyCode::Char(c) => {
-                                    app.command_input.push(c);
-                                }
-                                crossterm::event::KeyCode::Backspace => {
-                                    app.command_input.pop();
-                                }
-                                _ => {}
+                            crossterm::event::KeyCode::Char(c) => {
+                                app.edit_input.push(c);
                             }
-                        }
-                        app::AppMode::Search => {
-                            match key.code {
-                                crossterm::event::KeyCode::Esc => app.clear_search(),
-                                crossterm::event::KeyCode::Enter => {
-                                    app.execute_search();
-                                }
-                                crossterm::event::KeyCode::Char(c) => {
-                                    app.search_input.push(c);
-                                }
-                                crossterm::event::KeyCode::Backspace => {
-                                    app.search_input.pop();
-                                }
-                                _ => {}
+                            crossterm::event::KeyCode::Backspace => {
+                                app.edit_input.pop();
                             }
-                        }
+                            _ => {}
+                        },
+                        app::AppMode::Command => match key.code {
+                            crossterm::event::KeyCode::Esc => app.mode = app::AppMode::Normal,
+                            crossterm::event::KeyCode::Enter => {
+                                app.execute_command();
+                            }
+                            crossterm::event::KeyCode::Char(c) => {
+                                app.command_input.push(c);
+                            }
+                            crossterm::event::KeyCode::Backspace => {
+                                app.command_input.pop();
+                            }
+                            _ => {}
+                        },
+                        app::AppMode::Search => match key.code {
+                            crossterm::event::KeyCode::Esc => app.clear_search(),
+                            crossterm::event::KeyCode::Enter => {
+                                app.execute_search();
+                            }
+                            crossterm::event::KeyCode::Char(c) => {
+                                app.search_input.push(c);
+                            }
+                            crossterm::event::KeyCode::Backspace => {
+                                app.search_input.pop();
+                            }
+                            _ => {}
+                        },
                     }
                 }
-                crossterm::event::Event::Mouse(mouse_event) => {
-                    match mouse_event.kind {
-                        crossterm::event::MouseEventKind::ScrollDown => {
-                            app.move_down();
-                            app.move_down();
-                            app.move_down();
-                        }
-                        crossterm::event::MouseEventKind::ScrollUp => {
-                            app.move_up();
-                            app.move_up();
-                            app.move_up();
-                        }
-                        crossterm::event::MouseEventKind::Down(crossterm::event::MouseButton::Left) => {
-                            app.handle_click(mouse_event.column, mouse_event.row);
-                        }
-                        _ => {}
+                crossterm::event::Event::Mouse(mouse_event) => match mouse_event.kind {
+                    crossterm::event::MouseEventKind::ScrollDown => {
+                        app.move_down();
+                        app.move_down();
+                        app.move_down();
                     }
-                }
+                    crossterm::event::MouseEventKind::ScrollUp => {
+                        app.move_up();
+                        app.move_up();
+                        app.move_up();
+                    }
+                    crossterm::event::MouseEventKind::Down(crossterm::event::MouseButton::Left) => {
+                        app.handle_click(mouse_event.column, mouse_event.row);
+                    }
+                    _ => {}
+                },
                 _ => {}
             }
         }
