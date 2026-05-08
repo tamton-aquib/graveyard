@@ -1,14 +1,19 @@
 [package]
 name = "stagnate"
 version = "0.1.0"
+license = "MIT"
+description = "A cli tool for managing your excel files. Can handle large sheets."
+repository = "https://github.com/tamton-aquib/graveyard/stagnate"
 edition = "2024"
 
 [dependencies]
 ratatui = "0.26"
 crossterm = "0.27"
-calamine = "0.32"
-rust_xlsxwriter = "0.71"
+umya-spreadsheet = "2"
 regex = "1.11.1"
+rayon = "1.10"
+quick-xml = "0.38"
+zip = "2"
 
 [profile.dev.package."*"]
 opt-level = 3
@@ -19,3 +24,6 @@ opt-level = 2
 [profile.release]
 lto = true
 codegen-units = 1
+strip = true
+panic = "abort"
+

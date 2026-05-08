@@ -1,5 +1,7 @@
 use crate::excel_handler::ExcelHandler;
+use rayon::prelude::*;
 use regex::Regex;
+use std::borrow::Cow;
 use std::collections::HashMap;
 use std::time::Instant;
 
@@ -131,7 +133,7 @@ impl App {
     pub fn enter_edit_mode(&mut self) {
         self.mode = AppMode::Edit;
         let cell_val = self.get_cell_value(self.cursor_y, self.cursor_x);
-        self.edit_input = cell_val;
+        self.edit_input = cell_val.into_owned();
     }
 
     pub fn exit_edit_mode(&mut self) {
@@ -196,33 +198,41 @@ impl App {
             matches.push(0); // keep header
         }
 
-        let c = self.cursor_x;
+        let col = self.cursor_x;
+        let handler = &self.handler;
+        let cell_edits = &self.cell_edits;
+        let sheet_name = handler.sheet_name();
 
-        let rows_to_search: Box<dyn Iterator<Item = usize>> =
-            if let Some(filtered) = &self.filtered_rows {
-                Box::new(
-                    filtered
-                        .iter()
-                        .copied()
-                        .skip(1)
-                        .collect::<Vec<usize>>()
-                        .into_iter(),
-                ) // Skip header 0
-            } else {
-                Box::new(1..total)
-            };
+        let rows: Vec<usize> = if let Some(filtered) = &self.filtered_rows {
+            filtered.iter().skip(1).copied().collect()
+        } else {
+            (1..total).collect()
+        };
 
-        for r in rows_to_search {
-            let val = self.get_raw_cell_value(r, c);
-            let is_match = if let Some(re) = &regex_opt {
-                re.is_match(&val)
-            } else {
-                val.to_lowercase().contains(&literal_query)
-            };
-            if is_match {
-                matches.push(r);
-            }
-        }
+        let mut found: Vec<usize> = rows
+            .par_iter()
+            .filter(|&&r| {
+                let val: Cow<'_, str> = if let Some(sheet_edits) = cell_edits.get(&sheet_name) {
+                    if let Some(v) = sheet_edits.get(&(r, col)) {
+                        Cow::Borrowed(v.as_str())
+                    } else {
+                        handler.get_cell(r, col)
+                    }
+                } else {
+                    handler.get_cell(r, col)
+                };
+
+                if let Some(re) = &regex_opt {
+                    re.is_match(&val)
+                } else {
+                    val.to_lowercase().contains(&literal_query)
+                }
+            })
+            .copied()
+            .collect();
+
+        found.sort_unstable();
+        matches.append(&mut found);
         self.filtered_rows = Some(matches);
         self.cursor_y = 0;
         self.adjust_viewport();
@@ -255,16 +265,16 @@ impl App {
         }
     }
 
-    pub fn get_raw_cell_value(&self, raw_r: usize, c: usize) -> String {
+    pub fn get_raw_cell_value(&self, raw_r: usize, c: usize) -> Cow<'_, str> {
         if let Some(sheet_edits) = self.cell_edits.get(&self.handler.sheet_name()) {
             if let Some(val) = sheet_edits.get(&(raw_r, c)) {
-                return val.clone();
+                return Cow::Borrowed(val.as_str());
             }
         }
         self.handler.get_cell(raw_r, c)
     }
 
-    pub fn get_cell_value(&self, visual_r: usize, c: usize) -> String {
+    pub fn get_cell_value(&self, visual_r: usize, c: usize) -> Cow<'_, str> {
         let raw_r = self.actual_row(visual_r);
         self.get_raw_cell_value(raw_r, c)
     }
